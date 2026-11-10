@@ -4,7 +4,7 @@ Aplicação móvel para controlar o inventário do armazém da **ElectroSmart So
 
 Projeto Mobile · Licenciatura em Engenharia Informática · Universidade Europeia, IADE · 3.º semestre de 2026-27 · **Grupo 07**
 
-![Estado](https://img.shields.io/badge/estado-1.%C2%AA%20entrega-blue)
+![Estado](https://img.shields.io/badge/estado-2.%C2%AA%20entrega-orange)
 ![Flutter](https://img.shields.io/badge/app-Flutter%20%2F%20Dart-02569B)
 ![Node.js](https://img.shields.io/badge/API-Node.js%20%2B%20Express-339933)
 ![MySQL](https://img.shields.io/badge/BD-MySQL-4479A1)
@@ -47,11 +47,13 @@ No **ES Stock**, cada artigo tem um **QR Code** próprio. O operador lê o códi
 |---|---|
 | Proposta inicial e planeamento | Concluído (1.ª entrega) |
 | Mockups no Figma (14 ecrãs) | Concluído |
-| Base de dados MySQL | A desenvolver (2.ª entrega) |
-| API REST (Node.js) | A desenvolver (2.ª entrega) |
-| App Flutter | A desenvolver (2.ª e 3.ª entregas) |
+| Base de dados MySQL (`create.sql`, `populate.sql`, `queries.sql`) | Versão alfa feita (2.ª entrega) |
+| API REST (Node.js + Express, MVC) | Versão alfa feita, com 11 testes automáticos (2.ª entrega) |
+| App Flutter (models, controllers, views) | Versão alfa a consumir a API: criar conta e login, lista e pesquisa de artigos, leitura de QR, entradas e saídas, alertas, histórico com filtros, estatísticas e novo artigo (2.ª entrega) |
+| Documentação REST, dicionário de dados e diagramas | Primeira versão em `docs/` |
+| Notificação local, edição completa de artigos, impressão de etiquetas | Previsto para a 3.ª entrega |
 
-As instruções de execução abaixo descrevem o resultado previsto e serão confirmadas à medida que o código for entregue.
+A app corre no browser (Chrome) e em Android; o teste num telemóvel real fica para a 3.ª entrega.
 
 ## Funcionalidades
 
@@ -90,8 +92,8 @@ A app **nunca acede diretamente** à base de dados. O servidor valida os pedidos
 
 **Padrão MVC**
 
-- App Flutter: `models/`, `services/` (chamadas à API), `screens/` e `widgets/` (vista), `providers/` (estado)
-- Servidor Node.js: `routes/`, `controllers/`, `models/` e acesso a dados
+- App Flutter: `lib/models/`, `lib/controllers/`, `lib/views/` (ecrãs e widgets) e `lib/services/` (chamadas HTTP à API)
+- Servidor Node.js: `src/routes/`, `src/controllers/`, `src/models/` (acesso à base de dados) e `src/middleware/`
 
 | Área | Tecnologia |
 |---|---|
@@ -109,30 +111,22 @@ A app **nunca acede diretamente** à base de dados. O servidor valida os pedidos
 ```
 es-stock/
 ├── README.md
+├── LINKS.md              # Figma, apresentação e repositório
 ├── docs/                 # Relatórios e documentação
-│   ├── g07-proposta-v1.pdf
-│   └── imagens/          # Imagens img_NN.jpg do arquivo da entrega
-├── app/                  # App Flutter (MVC)
-│   └── lib/
-│       ├── models/
-│       ├── services/
-│       ├── providers/
-│       ├── screens/
-│       └── widgets/
-├── server/               # API REST em Node.js
-│   └── src/
-│       ├── routes/
-│       ├── controllers/
-│       ├── models/
-│       └── config/
-├── database/             # Scripts MySQL
-│   ├── create.sql
-│   ├── populate.sql
-│   └── queries.sql
+│   ├── g07-proposta-v1.pdf / .docx
+│   ├── documentacao-rest.md      # API REST (2.ª entrega)
+│   ├── guia-teste-no-telemovel.md # APK e API no computador, na rede Wi-Fi
+│   ├── dicionario-de-dados.md    # Dicionário de dados e guia de dados
+│   ├── diagrama-de-classes.md    # Diagrama de classes e modelo ER
+│   ├── bd-report.md              # BD Report
+│   └── imagens/          # Diagramas e figuras da proposta
+├── Entrega_1/            # Arquivo da 1.ª entrega (PDF + pasta ES_Stock/ 00 a 07)
+├── scripts/              # criar_github_project.sh
+├── app/                  # App Flutter (MVC): lib/models, lib/controllers, lib/views, lib/services
+├── server/               # API REST em Node.js: src/routes, controllers, models, middleware, config
+├── database/             # create.sql, populate.sql, queries.sql
 └── design/               # Exportações do Figma
 ```
-
-Algumas pastas só aparecem nas entregas seguintes.
 
 ## Como executar
 
@@ -141,7 +135,7 @@ Algumas pastas só aparecem nas entregas seguintes.
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) e VS Code com as extensões Flutter e Dart
 - [Node.js](https://nodejs.org) (versão LTS)
 - [MySQL](https://dev.mysql.com/doc/) e MySQL Workbench
-- Um telemóvel Android com depuração USB, ou um emulador
+- Chrome, um emulador Android ou um telemóvel Android com depuração USB
 
 ### 1. Base de dados
 
@@ -155,36 +149,57 @@ mysql -u root -p es_stock < database/populate.sql
 ```bash
 cd server
 npm install
-cp .env.example .env      # preencher ligação à BD e segredo JWT
-npm start
+cp .env.example .env      # Windows: copy .env.example .env  (preencher DB_PASSWORD e JWT_SECRET)
+npm start                 # http://localhost:3000
+npm test                  # com o servidor a correr, corre os 11 testes da API
 ```
 
-Variáveis previstas no `.env`: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `PORT`.
+Variáveis do `.env`: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `JWT_EXPIRA` e `PORT`.
 
 ### 3. App
 
 ```bash
-cd app
+cd 
+flutter create .                       # só da primeira vez: gera android/, web/, etc.
+dart run tool/configurar_android.dart  # só para Android: permissões de internet e câmara
 flutter pub get
-flutter run
+flutter run -d chrome                  # ou o emulador / telemóvel
 ```
 
-No telemóvel, o endereço do servidor tem de ser o IP do computador na rede local, não `localhost`.
+Endereço do servidor: no Chrome é `http://localhost:3000`; no emulador Android é `http://10.0.2.2:3000` (já é o valor por omissão); num telemóvel real é o IP do computador na rede local. Pode alterar-se no ecrã de login (rodapé) ou com `flutter run --dart-define=API_URL=http://192.168.1.20:3000`.
+
+**Telemóvel:** o computador serve a API na rede Wi-Fi e a app instala-se por APK. Passo a passo em [docs/guia-teste-no-telemovel.md](docs/guia-teste-no-telemovel.md) (`scripts/preparar_rede_local.ps1` abre a firewall e mostra o IP).
+
+**Criar conta:** no login, «Criar conta». As contas novas são de operador; o gestor é criado na base de dados.
+
+**Utilizadores de teste** (palavra-passe `EsStock2026!`):
+
+| Utilizador | Email | Perfil |
+|---|---|---|
+| Dorivaldo Domingos | dorivaldo.domingos@electrosmart.example | Gestor |
+| Alcides Sequeira | alcides.sequeira@electrosmart.example | Operador |
+| Vladmir Benoliel | vladmir.benoliel@electrosmart.example | Operador |
+
+No Chrome a câmara não é usada: o código do artigo (por exemplo `ES-CAB-0107`) introduz-se à mão. Nos telemóveis a leitura é feita pela câmara.
 
 ## API REST
 
-Esboço dos endpoints principais (pode ser ajustado). A documentação completa seguirá o formato indicado no briefing.
+Documentação completa, com parâmetros, respostas e exemplos: [docs/documentacao-rest.md](docs/documentacao-rest.md).
 
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/auth/login` | Autenticar utilizador |
-| GET | `/artigos` | Listar artigos (com filtros) |
-| GET | `/artigos/:id` | Obter artigo (também pelo código QR) |
-| POST | `/artigos` | Criar artigo |
-| PUT | `/artigos/:id` | Editar artigo |
-| POST | `/movimentos` | Registar entrada, saída ou ajuste |
-| GET | `/movimentos` | Consultar histórico com filtros |
-| GET | `/alertas` | Listar alertas de stock baixo |
+| Método | Rota | Descrição | Perfil |
+|---|---|---|---|
+| POST | `/auth/login` | Autenticar utilizador (devolve token JWT) | público |
+| POST | `/auth/registar` | Criar conta de operador | público |
+| GET | `/artigos` | Listar artigos, com `q` e `categoria` | todos |
+| GET | `/artigos/codigo/:codigo` | Obter artigo pelo código lido no QR | todos |
+| GET | `/artigos/:id` | Obter artigo | todos |
+| POST | `/artigos` | Criar artigo (gera o código) | gestor |
+| PUT | `/artigos/:id` | Editar artigo | gestor |
+| DELETE | `/artigos/:id` | Desativar artigo | gestor |
+| POST | `/movimentos` | Registar entrada, saída ou ajuste | todos |
+| GET | `/movimentos` | Consultar histórico com filtros | todos |
+| GET | `/alertas` | Listar alertas de stock baixo | todos |
+| GET | `/estatisticas` | Consumo semanal e stock mínimo sugerido (Monte Carlo) | gestor |
 
 ## Base de dados
 
@@ -199,7 +214,7 @@ Seis entidades chegam para o essencial:
 | **Movimento** | tipo, quantidade, data e hora, destino, artigo, utilizador |
 | **Alerta** | data e hora, resolvido, artigo |
 
-Relações: uma categoria classifica muitos artigos, uma localização armazena muitos artigos, um artigo sofre muitos movimentos e gera muitos alertas, e um utilizador regista muitos movimentos. Os diagramas de domínio e entidade-relação estão no Anexo B da proposta.
+Relações: uma categoria classifica muitos artigos, uma localização armazena muitos artigos, um artigo sofre muitos movimentos e gera muitos alertas, e um utilizador regista muitos movimentos. Os diagramas de domínio e entidade-relação estão no Anexo B da proposta; a versão da 2.ª entrega (colunas, chaves e restrições) está em [docs/dicionario-de-dados.md](docs/dicionario-de-dados.md) e [docs/diagrama-de-classes.md](docs/diagrama-de-classes.md). O registo de movimentos é feito pelo procedimento `sp_registar_movimento`, numa transação.
 
 ## Design e mockups
 

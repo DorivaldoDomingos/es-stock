@@ -1,0 +1,141 @@
+-- ES Stock · populate.sql
+-- Dados fictícios (empresa, utilizadores e movimentos inventados) para testar a aplicação.
+-- Palavra-passe de todos os utilizadores de teste: EsStock2026!
+-- Executar depois do create.sql:  mysql -u root -p es_stock < database/populate.sql
+-- As datas dos movimentos são relativas ao dia em que o script é executado.
+
+SET NAMES utf8mb4;
+USE es_stock;
+
+INSERT INTO utilizador (nome, email, password_hash, perfil) VALUES
+('Dorivaldo Domingos', 'dorivaldo.domingos@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'gestor'),
+('Alcides Sequeira', 'alcides.sequeira@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador'),
+('Vladmir Benoliel', 'vladmir.benoliel@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador'),
+('Ana Ferreira', 'ana.ferreira@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador'),
+('Marta Costa', 'marta.costa@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador'),
+('Rui Almeida', 'rui.almeida@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador'),
+('Tiago Lopes', 'tiago.lopes@electrosmart.example', '$2a$10$/XoFvQ4Av8tEQ8W2n.N4XOyro8M5VH3XHQTQPVZXceK18QjHMCAam', 'operador');
+
+INSERT INTO categoria (nome, prefixo) VALUES
+('Alarmes', 'ALM'),
+('Automação', 'AUT'),
+('Cabos', 'CAB'),
+('Câmaras', 'CAM'),
+('Redes', 'RED'),
+('Sensores', 'SEN');
+
+INSERT INTO localizacao (zona, prateleira) VALUES
+('Armazém A', 'Prat. 1'),
+('Armazém A', 'Prat. 2'),
+('Armazém A', 'Prat. 3'),
+('Armazém B', 'Prat. 1'),
+('Armazém B', 'Prat. 2'),
+('Armazém C', 'Prat. 1'),
+('Armazém C', 'Prat. 2');
+
+INSERT INTO artigo (codigo_qr, nome, fornecedor, stock_atual, stock_minimo, categoria_id, localizacao_id) VALUES
+('ES-CAB-0107', 'Cabo HDMI 2 m', 'CaboNet', 0, 10, 3, 7),
+('ES-AUT-0010', 'Fechadura eletrónica', 'Nova Vision', 1, 2, 2, 4),
+('ES-RED-0013', 'Access Point Wi-Fi 6', 'NetPro', 2, 4, 5, 2),
+('ES-ALM-0003', 'Central de alarme 8 zonas', 'SecureTech', 3, 5, 1, 5),
+('ES-ALM-0012', 'Bateria 12V 7Ah', 'SecureTech', 15, 6, 1, 5),
+('ES-ALM-0006', 'Teclado de alarme', 'SecureTech', 8, 3, 1, 5),
+('ES-CAB-0101', 'Bobine cabo UTP Cat6 305 m', 'CaboNet', 5, 3, 3, 6),
+('ES-CAB-0112', 'Cabo de alimentação 2×0,75 100 m', 'CaboNet', 4, 2, 3, 6),
+('ES-CAB-0126', 'Conector RJ45 Cat6 (caixa 100)', 'CaboNet', 12, 4, 3, 7),
+('ES-CAM-0015', 'Câmara IP Bullet 4MP', 'Nova Vision', 9, 4, 4, 1),
+('ES-CAM-0042', 'Câmara IP Dome 4MP', 'Nova Vision', 6, 4, 4, 1),
+('ES-CAM-0051', 'Câmara IP Turret 8MP', 'Nova Vision', 7, 3, 4, 1),
+('ES-CAM-0060', 'Câmara PTZ 2MP 25x', 'Nova Vision', 3, 2, 4, 3),
+('ES-RED-0004', 'Router 5G', 'NetPro', 6, 2, 5, 2),
+('ES-RED-0009', 'Switch PoE 8 portas', 'NetPro', 7, 3, 5, 2),
+('ES-RED-0017', 'Patch panel 24 portas', 'NetPro', 5, 2, 5, 3),
+('ES-AUT-0002', 'Relé inteligente Wi-Fi', 'Nova Vision', 18, 6, 2, 4),
+('ES-AUT-0005', 'Tomada inteligente', 'Nova Vision', 10, 4, 2, 4),
+('ES-SEN-0007', 'Detetor de fumo ótico', 'SecureTech', 11, 4, 6, 5),
+('ES-SEN-0011', 'Sensor de porta magnético', 'SecureTech', 14, 5, 6, 5),
+('ES-SEN-0019', 'Sensor de inundação', 'SecureTech', 5, 3, 6, 5),
+('ES-SEN-0021', 'Sensor de temperatura e humidade IoT', 'Nova Vision', 7, 3, 6, 5),
+('ES-SEN-0023', 'Sirene interior 110 dB', 'SecureTech', 4, 2, 6, 5);
+
+INSERT INTO movimento (tipo, quantidade, destino_origem, data_hora, artigo_id, utilizador_id) VALUES
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 0 DAY), '03:10:00'), 1, 5),
+('entrada', 5, 'Fornecedor CaboNet', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 0 DAY), '03:09:00'), 1, 5),
+('saida', 2, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:28:00'), 2, 6),
+('saida', 2, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:25:00'), 16, 4),
+('saida', 4, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:24:00'), 3, 6),
+('saida', 8, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:21:00'), 5, 6),
+('saida', 5, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:19:00'), 4, 7),
+('saida', 1, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:17:00'), 8, 4),
+('saida', 11, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:16:00'), 1, 6),
+('saida', 3, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '10:15:00'), 7, 4),
+('entrada', 8, 'Fornecedor CaboNet', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 4 DAY), '10:06:00'), 7, 5),
+('saida', 1, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 6 DAY), '12:34:00'), 1, 7),
+('saida', 1, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 6 DAY), '09:25:00'), 1, 4),
+('entrada', 20, 'Fornecedor SecureTech', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 12 DAY), '11:00:00'), 5, 5),
+('saida', 3, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 15 DAY), '15:17:00'), 3, 5),
+('saida', 8, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 16 DAY), '12:59:00'), 1, 2),
+('saida', 3, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 17 DAY), '12:05:00'), 5, 5),
+('saida', 3, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 17 DAY), '10:50:00'), 4, 7),
+('saida', 2, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 18 DAY), '13:51:00'), 20, 7),
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 19 DAY), '16:14:00'), 2, 2),
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 19 DAY), '11:10:00'), 10, 5),
+('saida', 3, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 22 DAY), '13:30:00'), 20, 7),
+('saida', 2, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 23 DAY), '12:58:00'), 15, 5),
+('saida', 2, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 23 DAY), '10:41:00'), 2, 4),
+('saida', 3, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 23 DAY), '10:31:00'), 5, 3),
+('saida', 4, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 23 DAY), '08:25:00'), 3, 4),
+('saida', 4, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 24 DAY), '11:34:00'), 4, 5),
+('saida', 3, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 24 DAY), '10:39:00'), 10, 4),
+('saida', 10, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 26 DAY), '08:59:00'), 1, 5),
+('saida', 11, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 29 DAY), '11:01:00'), 1, 4),
+('saida', 1, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 30 DAY), '13:28:00'), 2, 7),
+('saida', 2, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 31 DAY), '13:53:00'), 3, 2),
+('saida', 3, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 31 DAY), '12:17:00'), 4, 6),
+('saida', 4, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 32 DAY), '14:52:00'), 20, 5),
+('saida', 4, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 33 DAY), '16:55:00'), 5, 7),
+('saida', 3, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 33 DAY), '13:41:00'), 15, 7),
+('saida', 1, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 33 DAY), '09:15:00'), 10, 4),
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 36 DAY), '12:55:00'), 5, 7),
+('saida', 2, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 37 DAY), '12:23:00'), 3, 2),
+('saida', 4, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 37 DAY), '09:51:00'), 4, 7),
+('saida', 2, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 38 DAY), '15:30:00'), 15, 4),
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 39 DAY), '08:03:00'), 10, 4),
+('saida', 2, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY), '16:56:00'), 20, 3),
+('saida', 10, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY), '14:03:00'), 1, 7),
+('saida', 1, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY), '08:35:00'), 2, 7),
+('saida', 2, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 43 DAY), '16:18:00'), 10, 4),
+('saida', 5, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 44 DAY), '12:23:00'), 4, 7),
+('saida', 3, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 46 DAY), '15:43:00'), 5, 2),
+('saida', 2, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 46 DAY), '13:03:00'), 2, 3),
+('saida', 5, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 46 DAY), '12:54:00'), 3, 6),
+('saida', 1, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 46 DAY), '08:36:00'), 20, 4),
+('saida', 3, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 47 DAY), '16:39:00'), 15, 4),
+('saida', 5, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 47 DAY), '08:48:00'), 1, 4),
+('saida', 2, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 50 DAY), '13:00:00'), 4, 5),
+('saida', 2, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 51 DAY), '14:41:00'), 5, 6),
+('saida', 2, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 52 DAY), '12:58:00'), 10, 2),
+('saida', 5, 'Clínica Vida Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 52 DAY), '11:44:00'), 3, 3),
+('saida', 9, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 53 DAY), '15:49:00'), 1, 3),
+('saida', 1, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 54 DAY), '15:02:00'), 20, 6),
+('saida', 1, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 54 DAY), '14:09:00'), 2, 3),
+('saida', 1, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 54 DAY), '13:11:00'), 15, 3),
+('saida', 3, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 57 DAY), '11:12:00'), 20, 6),
+('saida', 1, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 58 DAY), '15:45:00'), 10, 6),
+('saida', 2, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 58 DAY), '11:02:00'), 3, 4),
+('saida', 4, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 58 DAY), '09:39:00'), 1, 6),
+('saida', 3, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 58 DAY), '08:52:00'), 5, 3),
+('saida', 4, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 59 DAY), '11:30:00'), 4, 5),
+('saida', 1, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 60 DAY), '08:02:00'), 15, 6),
+('saida', 1, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 64 DAY), '14:45:00'), 2, 7),
+('saida', 2, 'Instalação Cliente X', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 64 DAY), '13:36:00'), 15, 7),
+('saida', 10, 'Escritório Lagos', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 65 DAY), '15:33:00'), 1, 5),
+('saida', 4, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 65 DAY), '14:52:00'), 5, 4),
+('saida', 4, 'Loja Centro Comercial Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 65 DAY), '13:03:00'), 4, 3),
+('saida', 4, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 65 DAY), '12:17:00'), 3, 5),
+('saida', 3, 'Hotel Sol Algarve', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 67 DAY), '08:06:00'), 10, 5),
+('saida', 3, 'Manutenção Faro', TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 68 DAY), '11:49:00'), 20, 7);
+
+-- Alertas abertos: artigos sem stock ou abaixo do mínimo
+INSERT INTO alerta (data_hora, resolvido, artigo_id)
+SELECT NOW(), 0, id FROM artigo WHERE stock_atual <= stock_minimo AND ativo = 1;
